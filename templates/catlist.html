@@ -1,0 +1,40 @@
+{% extends "index.html"%} {% block content %}
+<br>
+<div class="text-center">
+    <img class="img-fluid" src="https://i.ibb.co/bWDthLc/imageedit-4-9423460446.png" width="270px"></div><br>
+<h1 class="text-center"><strong>Pet Categories</strong></h1>
+{% with messages = get_flashed_messages() %} {% if messages %}
+<ul>
+    {% for message in messages %}
+    <li><strong>{{ message }} </strong></li>
+    {% endfor %}
+</ul>
+{% endif %} {% endwith %}
+<br>
+<form method="get" action="{{url_for('newCat')}}">
+    <button type="submit" class="btn btn-primary btn-lg">Add New Category</button>
+</form>
+
+<br>
+<div class="container-fluid padding">
+    <div class="row padding ">
+
+
+        {% for i in cat %}
+        <div class="col-sm-6">
+            <a href="{{url_for('petList', pet_id = i.id)}}">
+                <div class="card">
+                    <img height="270" width="100%" src="{{i.img_url}}">
+                    <h4 class="text-center"><strong>{{i.category}}</strong></h4><br>
+                    <p class="text-center"><a href="{{url_for('editCat', pet_id = i.id)}}">  Edit</a> | <a href="{{url_for('deleteCat', pet_id = i.id)}}">Delete</a></p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+
+
+    </div>
+</div>
+
+
+{% endblock %}

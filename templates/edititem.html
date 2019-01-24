@@ -1,0 +1,46 @@
+ {% extends "index.html"%} {% block content %}
+<br>
+<h3 class="text-center"><strong>Edit pet information</strong></h3>
+
+<form action="{{ url_for('editCatItem', pet_id = pet_id, p_id = i.id)}}" , method="post">
+    <div class="form-group">
+        <label>Name:</label>
+        <input class="form-control" type='text' , size="30" , name='name' placeholder="{{i.name}}">
+    </div>
+    <div class="form-group">
+        <label>Description:</label>
+        <input class="form-control" type='text' , size="30" , name='description' placeholder="{{i.description}}">
+    </div>
+    <div class="form-group">
+        <label class="radio-inline"><input type="radio" value="n" name="gender" checked>Not known</label>
+        <label class="radio-inline"><input type="radio" value="M" name="gender">Male</label>
+        <label class="radio-inline"><input type="radio" name="F">Female</label>
+    </div>
+    <div class="form-group">
+        <label>Breed</label>
+        <input class="form-control" type='text' , size="30" , name='breed' placeholder="{{i.breed}}">
+    </div>
+    <div class="form-group">
+        <label>Medical Record:</label>
+        <input class="form-control" type='text' , size="30" , name='medical_record_info' placeholder="{{i.medical_record_info}}">
+    </div>
+    <div class="form-group">
+        <label>Owner Name:</label>
+        <input class="form-control" type='text' , size="30" , name='owner' placeholder="{{i.owner}}">
+    </div>
+    <div class="form-group">
+        <label>Contact:</label>
+        <input class="form-control" type='text' , size="30" , name='contact' placeholder="{{i.contact}}">
+    </div>
+    <div class="form-group">
+        <label>Location:</label>
+        <input class="form-control" type='text' , size="30" , name='location' placeholder="{{i.location}}">
+    </div>
+    <div class="form-group">
+        <label>Image URL:</label>
+        <input class="form-control" type='text' , size="30" , name='img_url' placeholder="{{i.img_url}}">
+    </div>
+    <input class="form-control btn btn-primary" type="submit" value="Edit">
+    <a href="{{ url_for('petList', pet_id = pet_id) }}">Cancel</a>
+</form>
+{% endblock %}

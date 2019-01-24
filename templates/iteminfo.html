@@ -1,0 +1,25 @@
+{% extends "index.html"%} {% block content %}
+<br>
+<h3 class="text-center"><strong>Pet Information</strong></h3><br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 img">
+            <img src="{{info.img_url}}" alt="" class="img-rounded img-fluid">
+        </div>
+        <div class="col-md-6 details">
+            <blockquote>
+                <h4><strong>{{info.name}}</strong></h4>
+                <p>
+                    <strong>Breed:</strong>{{info.breed}}<br>
+                    <strong>Gender:</strong>{{info.gender}}<br>
+                    <strong>Description:</strong>{{info.description}}<br>
+                    <strong>Medical Record:</strong>{{info.medical_record_info}}<br>
+                    <strong>Owner Name:</strong>{{info.owner}}<br>
+                    <strong>Owner Contact no.:</strong>{{info.contact}}<br>
+                    <strong>Location:</strong>{{info.location}}<br>
+                </p>
+            </blockquote>
+        </div>
+    </div>
+</div>
+{% endblock %}

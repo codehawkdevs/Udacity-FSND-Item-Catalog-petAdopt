@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://i.ibb.co/bWDthLc/imageedit-4-9423460446.png" />
+    <title>PetAdopt</title>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="//apis.google.com/js/platform.js?onload=start">
+    </script>
+    <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <!--{{url_for }}-->
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+    <div class="fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{ url_for('catList') }}"><img src="https://i.ibb.co/bWDthLc/imageedit-4-9423460446.png" class="logo"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('catList') }}">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('catList') }}">Pets <span class="sr-only">(catalog)</span></a>
+                    </li>
+
+                    {% if 'username' in session %}
+                    <li class="nav-item dropdown ml-auto">
+                        <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{{ session['picture'] }}"
+                        class="rounded-circle" alt="Profile Picture" style="height: 30px; width: 30px;">
+                    </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                            <p class="dropdown-item">Logged in as <strong>{{ session['username'] }}</strong></p>
+                            <hr>
+                            <a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt text-and-icon"></i>Log out</a>
+                        </div>
+                    </li>
+                </ul>
+                {% else %}
+                <a href="{{ url_for('showLogin') }}"><button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Login</button></a> {% endif %}
+            </div>
+        </nav>
+    </div>
+    <br><br>
+    <!--- Image Slider -->
+    {% block content %} {% endblock %}
+
+    <!-- Footer -->
+    <footer class="page-footer font-small blue ">
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2018 Copyright:
+            <a href="https://mdbootstrap.com/education/bootstrap/"> PetAdopt.com</a>
+        </div>
+        <!-- Copyright -->
+
+    </footer>
+    <!-- Footer -->
+    </footer>
+</body>
+
+</html>
