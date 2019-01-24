@@ -49,7 +49,7 @@ This web app is a project for the Udacity [FSND Course](https://www.udacity.com/
   ```
   5. Access and test your application by visiting [http://localhost:8000](http://localhost:8000).
 
-#### JSON Endpoints
+### JSON Endpoints
 The following are open to the public:
 
 Categories JSON: `/pets/JSON`
@@ -61,5 +61,5 @@ Category Items JSON: `/pets/<path:category_id>/items/JSON`
 Category Item JSON: `/pets/<path:category_id>/<path:pet_id>/JSON`
     - Displays a specific category item(pet).
 
-#### If you're running into issues:
+### If you're running into issues:
 contact me on [twitter](https://www.twitter.com/harshsahu97/)
