@@ -33,19 +33,19 @@ This web app is a project for the Udacity [FSND Course](https://www.udacity.com/
   2. Create the database with following command
 
   ```
-    $ python /vagrant/item-catalog/database_setup.py
+    $ python /vagrant/catalog/database_setup.py
   ```
 
   3. Insert fake data into database for testing purposes
 
   ```
-  $ python /vagrant/item-catalog/insertdata.py
+  $ python /vagrant/catalog/insertdata.py
   ```
 
   4. Run your application within the VM
   
   ```
-    $ python /vagrant/item-catalog/project.py
+    $ python /vagrant/catalog/project.py
   ```
   5. Access and test your application by visiting [http://localhost:8000](http://localhost:8000).
 
