@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Pets, PetSub, User
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from dict2xml import dict2xml as xmlify
 import httplib2
 import json
 import requests
@@ -38,6 +39,14 @@ session = scoped_session(DBSession)
 def catListJSON():  # cat can be understand as Category.
     cat = session.query(Pets).all()
     return jsonify(Pets=[i.serialize for i in cat])
+
+
+# Route to JSON of categories.
+@app.route('/XML/')
+@app.route('/pets/XML/')
+def catListXML():  # cat can be understand as Category.
+    cat = session.query(Pets).all()
+    return xmlify(data=[i.serialize for i in cat], wrap="all", indent="  ")
 
 
 # Route to Categories.
@@ -117,11 +126,26 @@ def petListJSON(pet_id):
     return jsonify(PetSub=[i.serialize for i in names])
 
 
+# Route to XML of a category's list.
+@app.route('/pets/<int:pet_id>/list/XML/')
+def petListXML(pet_id):
+    pets = session.query(Pets).filter_by(id=pet_id).one()
+    names = session.query(PetSub).filter_by(pet_id=pet_id).all()
+    return xmlify(data=[i.serialize for i in names], wrap="all", indent="  ")
+
+
 # Route to JSON of a particular pet in a category's list.
 @app.route('/pets/<int:pet_id>/list/<int:p_id>/JSON/')
 def petJSON(pet_id, p_id):
     pet = session.query(PetSub).filter_by(id=p_id).one()
     return jsonify(PetSub=pet.serialize)
+
+
+# Route to XML of a particular pet in a category's list.
+@app.route('/pets/<int:pet_id>/list/<int:p_id>/XML/')
+def petXML(pet_id, p_id):
+    pet = session.query(PetSub).filter_by(id=p_id).one()
+    return xmlify(data=[pet.serialize], wrap="all", indent="  ")
 
 
 # Route to the list of a selected category.
@@ -231,6 +255,14 @@ def deleteCatItem(pet_id, p_id):
 def petListItemJSON(pet_id, p_id):
     info = session.query(PetSub).filter_by(id=p_id).one()
     return jsonify(PetSub=info.serialize)
+
+
+# Route to get XML of information of a pet.
+@app.route('/pets/<int:pet_id>/<int:p_id>/info/XML/')
+@app.route('/pets/<int:pet_id>/list/<int:p_id>/info/XML/')
+def petListItemXML(pet_id, p_id):
+    info = session.query(PetSub).filter_by(id=p_id).one()
+    return xmlify(data=[info.serialize], wrap="all", indent="  ")
 
 
 # Route to get information of a pet.
