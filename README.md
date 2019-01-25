@@ -49,16 +49,16 @@ This web app is a project for the Udacity [FSND Course](https://www.udacity.com/
   ```
   5. Access and test your application by visiting [http://localhost:8000](http://localhost:8000).
 
-### JSON Endpoints
+### JSON/XML Endpoints
 The following are open to the public:
 
-Categories JSON: `/pets/JSON`
+Categories JSON: `/pets/JSON` or `/pets/XML` (use Ctrl + U for XML view)
     - Displays all categories
 
-Category Items JSON: `/pets/<path:category_id>/items/JSON`
+Category Items JSON: `/pets/<path:category_id>/list/JSON` or `/pets/<path:category_id>/list/XML`
     - Displays items (pets) for a specific category
 
-Category Item JSON: `/pets/<path:category_id>/<path:pet_id>/JSON`
+Category Item JSON: `/pets/<path:category_id>/<path:pet_id>/JSON` or `/pets/<path:category_id>/<path:pet_id>/XML`
     - Displays a specific category item(pet).
 
 ### If you're running into issues:
