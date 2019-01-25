@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import backref
 from flask import session as login_session
 
 Base = declarative_base()
@@ -31,6 +32,9 @@ class Pets(Base):
     img_url = Column(String(500), nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    # ON DELETE CASCADE implemented
+    # which delete all items when a category is deleted
+    child = relationship("PetSub", backref="parent", cascade="all,delete")
 
     @property
     # Return object data in easily serializeable format
@@ -53,7 +57,7 @@ class PetSub(Base):
     description = Column(String(200))
     img_url = Column(String(500), nullable=True)
     location = Column(String(80))
-    pet_id = Column(Integer, ForeignKey('pets.id'))
+    pet_id = Column(Integer, ForeignKey('pets.id', ondelete='CASCADE'))
     pets = relationship(Pets)
     owner = Column(String(80))
     medical_record_info = Column(String(200))
