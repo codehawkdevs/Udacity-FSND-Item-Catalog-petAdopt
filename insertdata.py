@@ -4,8 +4,7 @@ from database_setup import Base, Pets, PetSub, User
 from sqlalchemy.orm import scoped_session
 from flask import session as login_session
 
-engine = create_engine('sqlite:///petadopt.db',
-                       connect_args={'check_same_thread': False})
+engine = create_engine('postgresql://catalog:yourpassword@localhost/catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 from flask import Flask, render_template, make_response, flash, request
 from flask import redirect, url_for, jsonify
 from sqlalchemy.orm import scoped_session
@@ -11,21 +11,19 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Pets, PetSub, User
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-from dict2xml import dict2xml as xmlify
+
 import httplib2
 import json
 import requests
 
 app = Flask(__name__)
-
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 # Load the Google Login API Client ID.
-CLIENT_ID = json.loads(open('client_secrets.json', 'r')
-                       .read())['web']['client_id']
-
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+CLIENT_ID = json.loads(open(APP_ROOT + '/client_secrets.json', 'r').read())['web']['client_id']
 # Connects to the database.
 # Creates a session.
-engine = create_engine('sqlite:///petadopt.db',
-                       connect_args={'check_same_thread': False})
+engine = create_engine('postgresql://catalog:yourpassword@localhost/catalog')
 Base.metadata.bind = engine
 
 # Binds the engine to a session
@@ -38,15 +36,7 @@ session = scoped_session(DBSession)
 @app.route('/pets/JSON/')
 def catListJSON():  # cat can be understand as Category.
     cat = session.query(Pets).all()
-    return jsonify(Pets=[i.serialize for i in cat])
-
-
-# Route to JSON of categories.
-@app.route('/XML/')
-@app.route('/pets/XML/')
-def catListXML():  # cat can be understand as Category.
-    cat = session.query(Pets).all()
-    return xmlify(data=[i.serialize for i in cat], wrap="all", indent="  ")
+    return jsonify(Pets=[i.serialize for i in cat])# Route to JSON of categories.
 
 
 # Route to Categories.
@@ -255,15 +245,7 @@ def deleteCatItem(pet_id, p_id):
 def petListItemJSON(pet_id, p_id):
     info = session.query(PetSub).filter_by(id=p_id).one()
     return jsonify(PetSub=info.serialize)
-
-
-# Route to get XML of information of a pet.
-@app.route('/pets/<int:pet_id>/<int:p_id>/info/XML/')
-@app.route('/pets/<int:pet_id>/list/<int:p_id>/info/XML/')
-def petListItemXML(pet_id, p_id):
-    info = session.query(PetSub).filter_by(id=p_id).one()
-    return xmlify(data=[info.serialize], wrap="all", indent="  ")
-
+# Route to get XML of informatio of aet
 
 # Route to get information of a pet.
 @app.route('/pets/<int:pet_id>/<int:p_id>/info/')

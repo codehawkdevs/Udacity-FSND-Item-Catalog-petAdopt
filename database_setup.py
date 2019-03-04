@@ -83,5 +83,5 @@ class PetSub(Base):
             'user_id': self.user_id
         }
 
-engine = create_engine('sqlite:///petadopt.db')
+engine = create_engine('postgresql://catalog:yourpassword@localhost/catalog')
 Base.metadata.create_all(engine)
