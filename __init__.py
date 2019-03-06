@@ -23,7 +23,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 CLIENT_ID = json.loads(open(APP_ROOT + '/client_secrets.json', 'r').read())['web']['client_id']
 # Connects to the database.
 # Creates a session.
-engine = create_engine('postgresql://catalog:yourpassword@localhost/catalog')
+engine = create_engine('postgresql://catalog:yourpassword@localhost/catalog',pool_size=20, max_overflow=0)
 Base.metadata.bind = engine
 
 # Binds the engine to a session

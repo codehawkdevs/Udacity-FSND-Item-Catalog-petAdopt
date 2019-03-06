@@ -61,8 +61,8 @@ class PetSub(Base):
     pets = relationship(Pets)
     owner = Column(String(80))
     medical_record_info = Column(String(200))
-    gender = Column(String(1))
-    contact = Column(Integer)
+    gender = Column(String(20))
+    contact = Column(String(30))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
