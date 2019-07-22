@@ -39,11 +39,11 @@ session = scoped_session(DBSession)
 google_blueprint = make_google_blueprint(
     client_id='491008090900-svvjlhlqekgcm2l4kias456dlkk8k5tc.apps.googleusercontent.com', client_secret='mLek96IzmcfOZU3t--LWQvnj', scope=["profile", "email"])
 #twitter_blueprint = make_twitter_blueprint(api_key='',api_secret='')
-facebook_blueprint = make_facebook_blueprint(api_key='', api_secret='')
+#facebook_blueprint = make_facebook_blueprint(api_key='', api_secret='')
 
 # register blueprint
 app.register_blueprint(google_blueprint, url_prefix="/login")
-app.register_blueprint(facebook_blueprint, url_prefix="/login")
+#app.register_blueprint(facebook_blueprint, url_prefix="/login")
 
 
 @app.route('/login/google')
@@ -55,6 +55,7 @@ def google_login():
     print("You are {email} on Google".format(email=resp.json()["email"]))
 
 
+'''
 @app.route("/login/facebook")
 def index():
     if not facebook.authorized:
@@ -62,7 +63,7 @@ def index():
     resp = facebook.get("/me")
     assert resp.ok, resp.text
     return "You are {name} on Facebook".format(name=resp.json()["name"])
-
+'''
 
 # Route to JSON of categories.
 @app.route('/JSON/')
