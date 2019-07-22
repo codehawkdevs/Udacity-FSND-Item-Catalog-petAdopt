@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 
-from flask import Flask, render_template, make_response, flash, request
-from flask import redirect, url_for, jsonify
-from sqlalchemy.orm import scoped_session
-from flask import session as login_session
-import random
-import string
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Pets, PetSub, User
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
-from dict2xml import dict2xml as xmlify
-import httplib2
-import json
 import requests
+import json
+import httplib2
+from dict2xml import dict2xml as xmlify
+from oauth2client.client import FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets
+from database_setup import Base, Pets, PetSub, User
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+import string
+import random
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
+from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
+from flask import session as login_session
+from sqlalchemy.orm import scoped_session
+from flask import redirect, url_for, jsonify
+from flask import Flask, render_template, make_response, flash, request
 
 app = Flask(__name__)
 
@@ -31,6 +34,34 @@ Base.metadata.bind = engine
 # Binds the engine to a session
 DBSession = sessionmaker(bind=engine)
 session = scoped_session(DBSession)
+
+# Flask Dance Blueprints
+google_blueprint = make_google_blueprint(
+    client_id='491008090900-svvjlhlqekgcm2l4kias456dlkk8k5tc.apps.googleusercontent.com', client_secret='mLek96IzmcfOZU3t--LWQvnj', scope=["profile", "email"])
+#twitter_blueprint = make_twitter_blueprint(api_key='',api_secret='')
+facebook_blueprint = make_facebook_blueprint(api_key='', api_secret='')
+
+# register blueprint
+app.register_blueprint(google_blueprint, url_prefix="/login")
+app.register_blueprint(facebook_blueprint, url_prefix="/login")
+
+
+@app.route('/login/google')
+def google_login():
+    if not google.authorized:
+        return redirect(url_for('google.login'))
+    resp = google.get("/oauth2/v1/userinfo")
+    assert resp.ok, resp.text
+    print("You are {email} on Google".format(email=resp.json()["email"]))
+
+
+@app.route("/login/facebook")
+def index():
+    if not facebook.authorized:
+        return redirect(url_for("facebook.login"))
+    resp = facebook.get("/me")
+    assert resp.ok, resp.text
+    return "You are {name} on Facebook".format(name=resp.json()["name"])
 
 
 # Route to JSON of categories.
@@ -175,10 +206,10 @@ def newCatItem(pet_id):
                          contact=request.form['contact'],
                          location=request.form['location'],
                          img_url=(
-                                  "https://i.ibb.co/t8TKqgF/qm.jpg"
-                                  if request.form['img_url'] == ""
-                                  else request.form['img_url']),
-                         pet_id=pet_id)
+            "https://i.ibb.co/t8TKqgF/qm.jpg"
+            if request.form['img_url'] == ""
+            else request.form['img_url']),
+            pet_id=pet_id)
         session.add(newItem)
         session.commit()
         flash("Your Pet has beed added to our list!")
@@ -210,7 +241,7 @@ def editCatItem(pet_id, p_id):
             editedItem.breed = request.form['breed']
         if request.form['medical_record_info']:
             editedItem.medical_record_info = request.form[
-                                            'medical_record_info']
+                'medical_record_info']
         if request.form['owner']:
             editedItem.owner = request.form['owner']
         if request.form['contact']:
@@ -277,8 +308,8 @@ def petListItem(pet_id, p_id):
 @app.route('/login/')
 def showLogin():
     state = ''.join(random.choice(
-                                  string.ascii_uppercase + string.digits)
-                    for x in range(32))
+        string.ascii_uppercase + string.digits)
+        for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
@@ -327,7 +358,7 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print ("Token's client ID does not match app's.")
+        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -365,7 +396,7 @@ def gconnect():
     output += login_session['username']
     output += '!</h1>'
     flash("you are now logged in as %s" % login_session['username'])
-    print ("done!")
+    print("done!")
     return output
 
 
@@ -436,6 +467,7 @@ def getUserID(email):
         return user.id
     except:
         return None
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
