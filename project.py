@@ -18,6 +18,9 @@ from flask import session as login_session
 from sqlalchemy.orm import scoped_session
 from flask import redirect, url_for, jsonify
 from flask import Flask, render_template, make_response, flash, request
+import os
+import sys
+
 
 app = Flask(__name__)
 
@@ -37,22 +40,49 @@ session = scoped_session(DBSession)
 
 # Flask Dance Blueprints
 google_blueprint = make_google_blueprint(
-    client_id='491008090900-svvjlhlqekgcm2l4kias456dlkk8k5tc.apps.googleusercontent.com', client_secret='mLek96IzmcfOZU3t--LWQvnj', scope=["profile", "email"])
-#twitter_blueprint = make_twitter_blueprint(api_key='',api_secret='')
+    client_id='982428003194-1tfbs2gpljhvmdp006nucagb1r7b7bsh.apps.googleusercontent.com', client_secret='U8AcWMrfk6hiMrPIYMleaRda', scope=['profile', 'email'], redirect_url='/login/google/authorize'
+)
+twitter_blueprint = make_twitter_blueprint(
+    api_key='iAbxfD8aWSC0YHmcl0RJ8etea', api_secret='ve1RJNCiB9yRHxZum9D5GNPJLQYeS7Nc3FuMdZbXCZ8duSNypy ')
 #facebook_blueprint = make_facebook_blueprint(api_key='', api_secret='')
 
 # register blueprint
 app.register_blueprint(google_blueprint, url_prefix="/login")
+app.register_blueprint(twitter_blueprint, url_prefix="/login")
 #app.register_blueprint(facebook_blueprint, url_prefix="/login")
+
+
+@app.route('/login/twitter')
+def twitter_loggin():
+    if not twitter.authorized:
+        return redirect(url_for("twitter.login"))
+    resp = twitter.get("account/verify_credentials.json")
+    assert resp.ok
+    return "You are @{screen_name} on Twitter".format(screen_name=resp.json()["screen_name"])
 
 
 @app.route('/login/google')
 def google_login():
     if not google.authorized:
         return redirect(url_for('google.login'))
-    resp = google.get("/oauth2/v1/userinfo")
-    assert resp.ok, resp.text
-    print("You are {email} on Google".format(email=resp.json()["email"]))
+
+
+@app.route('/login/google/authorize')
+def ga():
+    resp = google.get("/oauth2/v2/userinfo")
+    if resp.ok:
+        data = resp.json()
+        print(data, file=sys.stderr)
+        login_session['username'] = data['name']
+        login_session['picture'] = data['picture']
+        login_session['email'] = data['email']
+        user_id = getUserID(login_session['email'])
+        if not user_id:
+            user_id = createUser(login_session)
+        login_session['user_id'] = user_id
+
+        return "You are {email} on Google".format(
+            email=data["name"])
 
 
 '''
@@ -87,7 +117,6 @@ def catListXML():  # cat can be understand as Category.
 def catList():  # cat can be understand as Category.
     cat = session.query(Pets).all()
     return render_template('catlist.html', cat=cat)
-
 
 # Route for creating a new categories.
 @app.route('/pets/new/', methods=['GET', 'POST'])
@@ -314,94 +343,9 @@ def showLogin():
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-
-# Route to connect to the Google login oAuth method.
-@app.route('/gconnect', methods=['POST'])
-def gconnect():
-    if request.args.get('state') != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    # Obtain authorization code
-    code = request.data
-    try:
-        # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
-        oauth_flow.redirect_uri = 'postmessage'
-        credentials = oauth_flow.step2_exchange(code)
-    except FlowExchangeError:
-        response = make_response(
-            json.dumps('Failed to upgrade the authorization code.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-# Check that the access token is valid.
-    access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-           % access_token)
-    h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
-# If there was an error in the access token info, abort.
-    if result.get('error') is not None:
-        response = make_response(json.dumps(result.get('error')), 500)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    # Verify that the access token is used for the intended user.
-    gplus_id = credentials.id_token['sub']
-    if result['user_id'] != gplus_id:
-        response = make_response(
-            json.dumps("Token's user ID doesn't match given user ID."), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    # Verify that the access token is valid for this app.
-    if result['issued_to'] != CLIENT_ID:
-        response = make_response(
-            json.dumps("Token's client ID does not match app's."), 401)
-        print("Token's client ID does not match app's.")
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    stored_access_token = login_session.get('access_token')
-    stored_gplus_id = login_session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        x = 'Current user is already connected.'
-        response = make_response(json.dumps(x),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    # Store the access token in the session for later use.
-    login_session['access_token'] = credentials.access_token
-    login_session['gplus_id'] = gplus_id
-
-    # Get user info
-    userinfo_url = "https://www.googleapis.com/oauth2/v2/userinfo"
-    params = {'access_token': credentials.access_token, 'alt': 'json'}
-    answer = requests.get(userinfo_url, params=params)
-
-    data = answer.json()
-    print(data)
-    login_session['username'] = data['name']
-    login_session['picture'] = data['picture']
-    login_session['email'] = data['email']
-
-    user_id = getUserID(login_session['email'])
-    if not user_id:
-        user_id = createUser(login_session)
-    login_session['user_id'] = user_id
-
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    flash("you are now logged in as %s" % login_session['username'])
-    print("done!")
-    return output
-
-
 # Disconnect method for Google oAuth.
+
+
 def gdisconnect():
 
     access_token = login_session.get('access_token')
@@ -431,9 +375,14 @@ def gdisconnect():
 def logout():
     # Logs out the current user
     if 'username' in login_session:
-        gdisconnect()
-        del login_session['gplus_id']
-        del login_session['access_token']
+        token = google_blueprint.token["access_token"]
+        resp = google.post(
+            "https://accounts.google.com/o/oauth2/revoke",
+            params={"token": token},
+            headers={"Content-Type": "application/x-www-form-urlencoded"}
+        )
+        assert resp.ok, resp.text
+        del google_blueprint.token
         del login_session['username']
         del login_session['email']
         del login_session['picture']
@@ -471,6 +420,8 @@ def getUserID(email):
 
 
 if __name__ == '__main__':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
     app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
