@@ -44,12 +44,13 @@ google_blueprint = make_google_blueprint(
 )
 twitter_blueprint = make_twitter_blueprint(
     api_key='iAbxfD8aWSC0YHmcl0RJ8etea', api_secret='ve1RJNCiB9yRHxZum9D5GNPJLQYeS7Nc3FuMdZbXCZ8duSNypy ')
-#facebook_blueprint = make_facebook_blueprint(api_key='', api_secret='')
+facebook_blueprint = make_facebook_blueprint(
+    client_id='550662108678573', client_secret='6b7adbf8a30ffe761277ed62b150e9a3', redirect_url='/login/facebook/authorize')
 
 # register blueprint
 app.register_blueprint(google_blueprint, url_prefix="/login")
 app.register_blueprint(twitter_blueprint, url_prefix="/login")
-#app.register_blueprint(facebook_blueprint, url_prefix="/login")
+app.register_blueprint(facebook_blueprint, url_prefix="/login")
 
 
 @app.route('/login/twitter')
@@ -68,7 +69,7 @@ def google_login():
 
 
 @app.route('/login/google/authorize')
-def ga():
+def google_auth():
     resp = google.get("/oauth2/v2/userinfo")
     if resp.ok:
         data = resp.json()
@@ -80,20 +81,23 @@ def ga():
         if not user_id:
             user_id = createUser(login_session)
         login_session['user_id'] = user_id
+        flash("Welcome! You are logged in as {email}".format(
+            email=data["name"]))
+        return redirect(url_for('catList'))
 
-        return "You are {email} on Google".format(
-            email=data["name"])
 
-
-'''
 @app.route("/login/facebook")
-def index():
+def fb_login():
     if not facebook.authorized:
         return redirect(url_for("facebook.login"))
+
+
+@app.route('/login/facebook/authorize')
+def fb_auth():
     resp = facebook.get("/me")
     assert resp.ok, resp.text
     return "You are {name} on Facebook".format(name=resp.json()["name"])
-'''
+
 
 # Route to JSON of categories.
 @app.route('/JSON/')
@@ -333,7 +337,6 @@ def petListItem(pet_id, p_id):
     info = session.query(PetSub).filter_by(id=p_id).one()
     return render_template('iteminfo.html', info=info)
 
-
 # Create anti-forgery state token.
 @app.route('/login/')
 def showLogin():
@@ -342,33 +345,6 @@ def showLogin():
         for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
-
-# Disconnect method for Google oAuth.
-
-
-def gdisconnect():
-
-    access_token = login_session.get('access_token')
-    if access_token is None:
-        response = make_response(
-            json.dumps('Current user not connected.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[0]
-
-    if result['status'] == '200':
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    else:
-        response = make_response(
-            json.dumps('Failed to revoke token for given user.'), 400)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
 
 # Log out the current user.
 @app.route('/logout/')
@@ -393,8 +369,9 @@ def logout():
         flash("You were not logged in!")
         return redirect(url_for('catList'))
 
-
 # For the creation of new user.
+
+
 def createUser(login_session):
     newUsr = User(name=login_session['username'], email=login_session['email'],
                   img_url=login_session['picture'])
@@ -403,14 +380,16 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
-
 # Collects user info by user id.
+
+
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
-
 # Gets user info by email.
+
+
 def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
