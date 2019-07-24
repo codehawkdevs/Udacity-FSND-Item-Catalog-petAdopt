@@ -45,7 +45,8 @@ google_blueprint = make_google_blueprint(
 twitter_blueprint = make_twitter_blueprint(
     api_key='iAbxfD8aWSC0YHmcl0RJ8etea', api_secret='ve1RJNCiB9yRHxZum9D5GNPJLQYeS7Nc3FuMdZbXCZ8duSNypy ')
 facebook_blueprint = make_facebook_blueprint(
-    client_id='550662108678573', client_secret='6b7adbf8a30ffe761277ed62b150e9a3', redirect_url='/login/facebook/authorize')
+    client_id='2355072034582579', client_secret='ef49541bd1a064f2edaeca8f0328447a', scope=["public_profiles", "email"],
+    redirect_url='/login/facebook/authorize')
 
 # register blueprint
 app.register_blueprint(google_blueprint, url_prefix="/login")
@@ -96,6 +97,7 @@ def fb_login():
 def fb_auth():
     resp = facebook.get("/me")
     assert resp.ok, resp.text
+    print(resp.json(), file=sys.stderr)
     return "You are {name} on Facebook".format(name=resp.json()["name"])
 
 
