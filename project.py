@@ -24,7 +24,7 @@ import sys
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_keyzzzzz'
-app.config['OAUTHLIB_RELAX_TOKEN_SCOPE'] = True
+os.environ.get("OAUTHLIB_RELAX_TOKEN_SCOPE", default=True)
 # Load the Google Login API Client ID.
 CLIENT_ID = json.loads(open('client_secrets.json', 'r')
                        .read())['web']['client_id']
