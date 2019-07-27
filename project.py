@@ -96,7 +96,7 @@ def fb_login():
 
 @app.route('/login/facebook/authorize')
 def fb_auth():
-    resp = facebook.get("/")
+    resp = facebook.get("/me")
     assert resp.ok, resp.text
     print(resp.json(), file=sys.stderr)
     return "You are {name} on Facebook".format(name=resp.json()["name"])
