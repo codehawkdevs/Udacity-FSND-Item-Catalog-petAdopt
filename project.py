@@ -401,8 +401,6 @@ def getUserID(email):
 
 
 if __name__ == '__main__':
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run()
