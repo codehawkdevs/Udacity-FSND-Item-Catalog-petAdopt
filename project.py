@@ -46,7 +46,7 @@ google_blueprint = make_google_blueprint(
 twitter_blueprint = make_twitter_blueprint(
     api_key='iAbxfD8aWSC0YHmcl0RJ8etea', api_secret='ve1RJNCiB9yRHxZum9D5GNPJLQYeS7Nc3FuMdZbXCZ8duSNypy ')
 facebook_blueprint = make_facebook_blueprint(
-    client_id='2355072034582579', client_secret='ef49541bd1a064f2edaeca8f0328447a', scope=["default", "email"],
+    client_id='2355072034582579', client_secret='ef49541bd1a064f2edaeca8f0328447a', scope=["email"],
     redirect_url='/login/facebook/authorize')
 
 # register blueprint
