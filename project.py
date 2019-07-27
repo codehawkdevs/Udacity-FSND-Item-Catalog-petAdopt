@@ -23,7 +23,7 @@ import sys
 
 
 app = Flask(__name__)
-
+app.secret_key = 'super_secret_keyzzzzz'
 # Load the Google Login API Client ID.
 CLIENT_ID = json.loads(open('client_secrets.json', 'r')
                        .read())['web']['client_id']
@@ -401,6 +401,5 @@ def getUserID(email):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run()
