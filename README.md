@@ -1,6 +1,9 @@
 # Item Catalog(PetAdopt)
 This web app is a project for the Udacity [FSND Course](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004).
 
+#### [UPDATE Jul 2019] : This project now uses FLASK-Dance module for Facebook and Google logins. New updated front-end.
+
+
 ### Project Overview
 > To Develop an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items.
 
