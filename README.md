@@ -4,6 +4,7 @@ This web app is a project for the Udacity [FSND Course](https://www.udacity.com/
 ### [UPDATE Jul 2019] : 
 * This project now uses FLASK-Dance module for Facebook and Google logins.
 * New updated front-end.
+* [Live Demo](https://petshbtu.herokuapp.com)
 
 
 ### Project Overview
